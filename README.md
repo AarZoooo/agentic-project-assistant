@@ -1,104 +1,150 @@
-# Agentic Project Assistant
+# Web-Agentic Assistant
 
-An AI-powered coding assistant that provides conversational Q&A and performs refactoring on a local codebase through a secure web interface.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
----
+A web-based agentic assistant that leverages Retrieval-Augmented Generation (RAG) to understand and interact with your local files, enabling contextual Q&A and file manipulation.
 
-## Overview
+## Description
 
-This project aims to build an intelligent agent that acts as a pair programmer. It addresses the common challenges developers face, such as understanding legacy codebases, debugging complex logic, or performing repetitive refactoring tasks. By securely indexing a local project directory, the agent can provide context-aware answers and eventually modify code with user approval, improving developer velocity and code quality.
+This project allows a user to grant a sophisticated AI agent access to local files and directories. The agent ingests this data, building a contextual understanding using vector embeddings. Users can then converse with the agent to ask complex questions about their files, ask for modifications, or even request the creation of new files and directories, all through a simple chat interface.
 
 ## Key Features
 
--   **Code Comprehension:** Ask questions in plain English about your codebase and get synthesized answers.
--   **Secure & Local:** Indexes and reads your files locally using the browser's File System Access API. Your code never leaves your machine.
--   **Agentic Code Modification:** (Phase 3) Instruct the agent to perform refactoring, review the changes, and approve them before they are written to your files.
--   **Reproducible Environment:** (Phase 2) The entire application stack can be launched with a single `docker-compose up` command.
+-   **Local File Access**: Securely select local files or entire directories to use as a context.
+-   **Retrieval-Augmented Generation (RAG)**: All ingested text data is chunked, vectorized, and stored in a Milvus vector database for powerful semantic search.
+-   **Contextual Q&A**: Ask questions about your codebase, documents, or any text-based files and get answers based on their content.
+-   **File Manipulation**: The agent is equipped with tools to read, write, and create files on the local system based on user prompts.
+-   **Conversation History**: All conversations are saved, allowing users to track their interactions with the agent.
 
-## Tech Stack
+## Architecture Overview
 
--   **Frontend:** React (Vite), Tailwind CSS
--   **Backend:** Java 21, Spring Boot 3
--   **Agent Logic:** LangChain4j
--   **Databases:** Milvus (Vector Store), MongoDB (Conversation History)
--   **Containerization:** Docker & docker-compose
+The application is built on a modern, three-layer architecture to separate concerns and ensure scalability.
 
----
+[![High Level Architecture](assets/high%20level%20overview.png)](https://www.figma.com/board/tTr3LCinzwgRy9cXZwNiKZ/Untitled?node-id=1-2)
+*(Click image to view the interactive Figma board)*
 
-## 🎯 Project Roadmap & Checklist
+1.  **Frontend**: A React-based single-page application that provides the user-facing chat interface.
+2.  **Backend & Agent**: A Spring Boot application that exposes a RESTful API and contains the core agentic logic built with Langchain4j.
+3.  **Database**: A dual-database system using MongoDB for storing user and conversation data, and Milvus DB for vector embeddings.
 
-This is the step-by-step plan to follow to build the project. Update this checklist as you complete each task.
+## Technology Stack
 
-### Phase 1: Build the Core Application (Read-Only MVP)
-
-* [ ] **Setup: Backend**
-    * [ ] Initialize a Spring Boot 3 project with required dependencies (`web`, `langchain4j`, `milvus`, `mongodb`).
-    * [ ] Create the project directory structure (`controller`, `service`, `dto`, `tools`).
-* [ ] **Setup: Frontend**
-    * [ ] Initialize a React project using Vite.
-    * [ ] Create the project directory structure (`components`, `services`).
-* [ ] **Backend: API & Database Layer**
-    * [ ] Define the API contract (`/api/index`, `/api/chat`) in `AgentController`.
-    * [ ] Create the DTOs for the API contract.
-    * [ ] Implement the MongoDB `ConversationRepository`.
-    * [ ] Implement the Milvus connection and schema for `code_chunks`.
-* [ ] **Backend: Agent Logic**
-    * [ ] Implement the `IndexingWorkflow` in `AgentService` (chunking, embedding, storing).
-    * [ ] Implement the `RAGWorkflow` in `AgentService` (searching, prompting, generating).
-* [ ] **Frontend: Core Functionality**
-    * [ ] Implement the `DirectoryPicker` component using the File System Access API.
-    * [ ] Create the `api.js` service to communicate with the backend.
-    * [ ] Ensure file indexing is working end-to-end.
-* [ ] **Frontend: UI**
-    * [ ] Build the `ChatWindow`, `MessageBubble`, and `MessageInput` components.
-    * [ ] Integrate the chat UI with the `/api/chat` endpoint.
-    * [ ] Implement the `CodeBlock` component for syntax highlighting.
-
-### Phase 2: Containerize the Application
-
-* [ ] **Dockerfiles**
-    * [ ] Create a multi-stage `Dockerfile` for the Spring Boot backend.
-    * [ ] Create a multi-stage `Dockerfile` for the React frontend (using Nginx).
-* [ ] **Orchestration**
-    * [ ] Create a `docker-compose.yml` file defining the `frontend`, `backend`, `milvus`, and `mongodb` services.
-    * [ ] Ensure the entire application can be launched successfully with `docker-compose up`.
-
-### Phase 3: Evolve to the Read-Write Agent
-
-* [ ] **Backend: New Tools**
-    * [ ] Implement the `WriteFileTool`, `CreateFileTool`, and other file modification tools.
-    * [ ] Update the agent logic in `AgentService` to be able to use these new tools.
-* [ ] **Frontend: Approval UI**
-    * [ ] Design and build a UI component to display code "diffs" (changes).
-    * [ ] Implement the approval workflow (e.g., "Accept" / "Reject" buttons) that triggers the agent's file-writing tools.
+| Layer              | Technology                           |
+| ------------------ |--------------------------------------|
+| **Frontend** | React, Vite, TypeScript              |
+| **Backend & Agent**| Java 21+, Spring Boot 3, Langchain4j |
+| **Database** | MongoDB, Milvus DB                   |
+| **DevOps** | Docker, Docker Compose               |
 
 ---
 
-## Getting Started (Local Development)
+## Getting Started
 
-Instructions for running the project before containerization.
+Follow these instructions to get a local copy up and running for development and testing.
 
-**Prerequisites:**
--   Java 21+
--   Node.js 20+
--   Local instances of Milvus and MongoDB running.
+### Prerequisites
 
-**1. Clone the repository:**
-```bash
-git clone [https://github.com/aarzoooo/agentic-project-assistant.git](https://github.com/aarzoooo/agentic-project-assistant.git)
-cd agentic-project-assistant
-```
+-   Git
+-   JDK 17 or later
+-   Maven 3.8+
+-   Node.js 18+
+-   Docker and Docker Compose
 
-**2. Run the Backend:**
-```bash
-cd backend
-# Configure application.yml with your local settings
-mvn spring-boot:run
-```
+### Installation & Setup
 
-**3. Run the Frontend:**
-```bash
-cd frontend
-npm install
-npm run dev
-```
+1.  **Clone the repository:**
+    ```sh
+    git clone [https://github.com/aarzoooo/agentic-project-assistant.git](https://github.com/aarzoooo/agentic-project-assistant.git)
+    cd agentic-project-assistant
+    ```
+
+2.  **Configure Environment Variables:**
+    Create an `application.properties` file inside `backend/src/main/resources/` and add the following configuration.
+    *Note: The LLM API Key is required for the agent's core functionality.*
+    ```properties
+    # MongoDB Configuration
+    spring.data.mongodb.uri=mongodb://localhost:27017/agent_db
+
+    # Milvus Configuration
+    milvus.host=localhost
+    milvus.port=19530
+
+    # LLM Provider Configuration
+    langchain4j.chat-model.provider=openai
+    langchain4j.chat-model.openai.api-key=<YOUR_OPENAI_API_KEY>
+    langchain4j.chat-model.openai.model-name=gpt-4
+    
+    # Embedding Model Configuration
+    langchain4j.embedding-model.provider=huggingface
+    langchain4j.embedding-model.huggingface.model-name=all-minilm-l6-v2
+    ```
+
+3.  **Launch Databases:**
+    Start the required MongoDB and Milvus DB instances using Docker Compose.
+    ```sh
+    docker-compose up -d
+    ```
+
+4.  **Install Backend Dependencies:**
+    ```sh
+    cd backend
+    mvn clean install
+    ```
+
+5.  **Install Frontend Dependencies:**
+    ```sh
+    cd ../frontend
+    npm install
+    ```
+
+### Running the Application
+
+1.  **Run the Backend Server:**
+    ```sh
+    cd backend
+    mvn spring-boot:run
+    ```
+    The backend will be available at `http://localhost:8080`.
+
+2.  **Run the Frontend Development Server:**
+    ```sh
+    cd frontend
+    npm run dev
+    ```
+    The frontend will be available at `http://localhost:5173`.
+
+---
+
+## Workflows
+
+### New User Creation
+
+The system supports user creation via local credentials or OAuth2 providers.
+
+[![User Creation Flow](assets/new%20user%20flow.png)](https://www.figma.com/board/tTr3LCinzwgRy9cXZwNiKZ/Web-based-Agentic-Assistant?node-id=10-921)
+
+### New Session Creation (Data Ingestion)
+
+A new session begins when a user provides a file or directory for context. The content is then processed and ingested into the vector database.
+
+[![Session Creation Flow](assets/new%20session%20flow.png)](https://www.figma.com/board/tTr3LCinzwgRy9cXZwNiKZ/Web-based-Agentic-Assistant?node-id=13-1277)
+
+### Conversation Flow (RAG in Action)
+
+Each user message triggers a RAG pipeline to fetch relevant context and generate an informed response.
+
+[![Conversation Flow](assets/conversation%20flow.png)](https://www.figma.com/board/tTr3LCinzwgRy9cXZwNiKZ/Web-based-Agentic-Assistant?node-id=13-1678)
+
+## API Reference
+
+The backend exposes a RESTful API for managing users and conversations.
+
+| Method | Endpoint                        | Description                               |
+| ------ | ------------------------------- | ----------------------------------------- |
+| `GET`  | `/api/v1/users/{username}`      | Retrieves user information.               |
+| `POST` | `/api/v1/users`                 | Creates a new user.                       |
+| `PUT`  | `/api/v1/users/{username}`      | Updates user details.                     |
+| `GET`  | `/api/v1/conversations`         | Retrieves a list of conversations for a user. |
+| `POST` | `/api/v1/conversations`         | Creates a new conversation.               |
+| `GET`  | `/api/v1/conversations/{convId}`| Retrieves messages for a conversation.    |
+| `PUT`  | `/api/v1/conversations/{convId}`| Adds a new message to a conversation.     |
